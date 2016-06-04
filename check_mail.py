@@ -194,8 +194,9 @@ def main():
         print("to (type={0!r}) {1!r}".format(type(_to), _to))
         print("from (type = {0!r}) {1!r}".format(type(_from), _from))
         print("subject (type = {0!r}) {1!r}".format(type(_sub), _sub))
-        print("message:")
         m = MailChecker.content_cleanup(_msg)
+        print("message:")
+        pp.pprint(m)
 
     mail_checker = MailChecker(user, pwd, server, t, handler)
     mail_checker.start()
