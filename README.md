@@ -1,7 +1,10 @@
 # ingress_notification
 
-### Package needed
--   imaplib2
+### Install dependency
+
+```
+pip install -r requirements.txt
+```
 
 ### Usage
 Check the following code example
