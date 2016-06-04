@@ -1,7 +1,7 @@
 # ingress_notification
 
 ### Package needed
--   imap2lib
+-   imaplib2
 
 ### Usage
 Check the following code example
@@ -9,7 +9,7 @@ Check the following code example
     user = 'user@example.com'
     pwd = 'yourpassword'
     server = 'imap.gmail.com'
-    t = 86400 #timeout
+    t = 60 #timeout
 
     # This function will be invoked when there are new mails
     def handler(raw_email):

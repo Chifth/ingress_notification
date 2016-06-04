@@ -8,24 +8,18 @@ from email.header import decode_header
 import logging, logging.config, json
 import pprint
 
-DEBUG = False
-if DEBUG:
+
+### Logger settings ###
+if __debug__:
     lg = logging.getLogger('debugger')
 else:
     lg = logging.getLogger()
 
-def setup_logging(path='logging.json', level=logging.INFO):
-    """
-    setup logging configuration from a json file
-    """
-    if os.path.exists(path):
-        with open(path, 'r') as log_json_file:
-            logging.config.dictConfig(json.load(log_json_file))
-    else:
-        logging.basicConfig(level=level)
+pp = pprint.PrettyPrinter(indent=2)
 
 
 
+### Main Class ###
 class MailChecker(threading.Thread):
     waitingEvent = threading.Event()
     imap = None
@@ -36,33 +30,50 @@ class MailChecker(threading.Thread):
 
     @staticmethod
     def plain_text_from_raw_email(raw_email):
+        """
+        Extract (to, from, subject, contents) of a given raw_email using
+        'email' module. Contents only contains "text/plain" part. Other
+        parts will be ignored.
+        """
+        lg.debug('start plain_text_from_raw_email')
+        lg.debug("raw_email = {}".format(raw_email))
         mail = email.message_from_string(raw_email)
-        lg.debug("raw_email = {!r}".format(raw_email))
-        _to = mail['To']
-        _from = mail['From']
 
-        # Handle subject.
-        _subject = ""
+        _to = ''
+        _from = ''
+        _subject = ''
+        _msg = ''
+
+        if mail['To']:
+            _to = mail['To']
+
+        if mail['From']:
+            _from = mail['From']
+
+        # Extract the subject.
         encoded_subject = mail['Subject']
-        if encoded_subject != None:
-            lg.debug("encoded_subject = {!r}".format(encoded_subject))
+        lg.debug("encoded_subject = {!r}".format(encoded_subject))
+        if encoded_subject:
             headers = decode_header(encoded_subject)
-            lg.debug("headers = {!r}".format(headers))
+            lg.debug("headers = {}".format(pp.pformat(headers)))
+            # If mutliple encodings are used in subject, the list headers will
+            # have many tuples in the form of (text, encode_method).
             for (s, enc) in headers:
+                # Encode is not necessary if s is str not bytes
                 if isinstance(s, bytes):
-                    if enc:
+                    if enc: # enc could be None
                         s = s.decode(enc)
                     else:
                         s = s.decode()
                 _subject += s
 
-        # Handle contents.
-        _msg = []
+        # Extract contents. (only text/plain type).
         for part in mail.walk():
             lg.debug("type = {}".format(part.get_content_type()))
             lg.debug("\t {!r}".format(part.get_payload()))
             if part.get_content_type() == 'text/plain':
                 _msg = part.get_payload(decode=True).decode(part.get_content_charset())
+
         return (_to, _from, _subject, _msg)
 
     @staticmethod
@@ -78,7 +89,7 @@ class MailChecker(threading.Thread):
 
     def __init__(self, username, password,
             server='imap.gmail.com',
-            timeout=86400*180,
+            timeout=60,
             raw_mail_handler=lambda *args : None):
         threading.Thread.__init__(self)
         lg.info('MailChecker object initialized.')
@@ -116,11 +127,11 @@ class MailChecker(threading.Thread):
                 return data[i][1]
 
     def wait_for_new_mail(self):
-        lg.info('Waitin for new mails....')
+        lg.info('Waiting for new mails....')
         self.waitingEvent.clear()
         callback_normal = True
         def _idle_callback(args):
-            lg.info('imap.idle callback.')
+            lg.info("imap.idle callback with args {!r}".format(args))
             try:
                 if args[0][1][0] == ('IDLE terminated (Success)'):
                     lg.info('Got a new mail or timeout')
@@ -157,9 +168,21 @@ class MailChecker(threading.Thread):
 
 
 
-# The following part demoes printing senders of new mails
+### Demo ###
+
+#The following part demoes printing senders of new mails
 def main():
-    setup_logging(path='logging.json', level=logging.DEBUG)
+    def setup_logging(path='logging.json'):
+        """
+        setup logging configuration from a json file
+        """
+        if os.path.exists(path):
+            with open(path, 'r') as log_json_file:
+                logging.config.dictConfig(json.load(log_json_file))
+        else:
+            logging.basicConfig(level=level)
+
+    setup_logging(path='logging.json')
 
     user = 'user@example.com'
     pwd = 'yourpassword'
@@ -173,8 +196,6 @@ def main():
         print("subject (type = {0!r}) {1!r}".format(type(_sub), _sub))
         print("message:")
         m = MailChecker.content_cleanup(_msg)
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(m)
 
     mail_checker = MailChecker(user, pwd, server, t, handler)
     mail_checker.start()
