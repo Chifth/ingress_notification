@@ -24,6 +24,9 @@ pp = pprint.PrettyPrinter(indent=2)
 class MailChecker(threading.Thread):
     waitingEvent = threading.Event()
     imap = None
+    username = None
+    password = None
+    server = None
     old_mails = set()
     raw_mail_handler = None
     kill_now = False
@@ -88,19 +91,11 @@ class MailChecker(threading.Thread):
                 new_msg.append(m)
         return new_msg
 
-    def __init__(self, username, password,
-            server='imap.gmail.com',
-            timeout=60,
-            raw_mail_handler=lambda *args : None):
-        threading.Thread.__init__(self)
-        lg.info('MailChecker object initialized.')
-        lg.info('username = %s', username)
-        lg.debug('password = %s', password)
-        self.imap = imaplib2.IMAP4_SSL(server)
-        self.timeout = timeout
-        self.raw_mail_handler = raw_mail_handler
+    def connect(self):
+        lg.info('Connecting to the mail server...')
+        self.imap = imaplib2.IMAP4_SSL(self.server)
         try:
-            typ, data = self.imap.login(username, password)
+            typ, data = self.imap.login(self.username, self.password)
             self.imap.select('INBOX')
             typ, data = self.imap.SEARCH(None, 'ALL')
             self.old_mails = set(data[0].split())
@@ -110,6 +105,19 @@ class MailChecker(threading.Thread):
         lg.info('Found %d mails.', len(self.old_mails))
         lg.debug('Exists mails:')
         lg.debug(self.old_mails)
+
+    def __init__(self, username, password,
+            server='imap.gmail.com',
+            timeout=60,
+            raw_mail_handler=lambda *args : None):
+        threading.Thread.__init__(self)
+        lg.info('MailChecker object initialized.')
+        self.server = server
+        self.timeout = timeout
+        self.username = username
+        self.password = password
+        self.raw_mail_handler = raw_mail_handler
+        self.connect()
 
     def run(self):
         lg.info('Running MailChecker.')
@@ -132,21 +140,25 @@ class MailChecker(threading.Thread):
         self.waitingEvent.clear()
         callback_normal = True
         def _idle_callback(args):
-            lg.info("imap.idle callback with args {!r}".format(args))
+            lg.debug("imap.idle callback with args {!r}".format(args))
             try:
                 if args[0][1][0] == ('IDLE terminated (Success)'):
-                    lg.info('Got a new mail or timeout')
+                    lg.debug('Got a new mail or timeout')
                     self.callback_normal = True
                 else:
-                    lg.info('imap.idle callback abnormally')
+                    lg.warning('imap.idle callback abnormally')
                     self.callback_normal = False
             except TypeError:
-                lg.error('imap.idle callback abnormally')
+                lg.warning('imap.idle callback abnormally')
                 self.callback_normal = False
             self.waitingEvent.set()
-        self.imap.idle(timeout=self.timeout, callback=_idle_callback)
-        self.waitingEvent.wait()
-        lg.info('Waiting ended.')
+        try:
+            self.imap.idle(timeout=self.timeout, callback=_idle_callback)
+            self.waitingEvent.wait()
+        except Exception as e:
+            lg.error('Idle error. Prepare for reconnecting')
+            self.connect()
+        lg.debug('Waiting ended.')
         if self.kill_now:
             lg.info('The thread is killed. Stop waiting.')
             self.imap.CLOSE()
@@ -157,11 +169,11 @@ class MailChecker(threading.Thread):
             new_mails = 0
             new_mails = set(data[0].split()) - self.old_mails
             if len(new_mails) == 0:
-                lg.info('No new mail.')
+                lg.debug('No new mail.')
             else:
                 lg.info('Got new mail(s)!')
                 for _id in new_mails:
-                    lg.info('Mail ID: %r', _id)
+                    lg.debug('Mail ID: %r', _id)
                     typ, d = self.imap.fetch(_id, '(RFC822)')
                     lg.debug("d = {!r}".format(d))
                     raw_email = self._get_raw_email_from_fetched_data(d)
