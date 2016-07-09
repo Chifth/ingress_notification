@@ -39,8 +39,6 @@ class MailChecker(threading.Thread):
         'email' module. Contents only contains "text/plain" part. Other
         parts will be ignored.
         """
-        lg.debug('start plain_text_from_raw_email')
-        lg.debug("raw_email = {}".format(raw_email))
         mail = email.message_from_string(raw_email)
 
         _to = ''
@@ -56,10 +54,8 @@ class MailChecker(threading.Thread):
 
         # Extract the subject.
         encoded_subject = mail['Subject']
-        lg.debug("encoded_subject = {!r}".format(encoded_subject))
         if encoded_subject:
             headers = decode_header(encoded_subject)
-            lg.debug("headers = {}".format(pp.pformat(headers)))
             # If mutliple encodings are used in subject, the list headers will
             # have many tuples in the form of (text, encode_method).
             for (s, enc) in headers:
@@ -73,8 +69,6 @@ class MailChecker(threading.Thread):
 
         # Extract contents. (only text/plain type).
         for part in mail.walk():
-            lg.debug("type = {}".format(part.get_content_type()))
-            lg.debug("\t {!r}".format(part.get_payload()))
             if part.get_content_type() == 'text/plain':
                 _msg = part.get_payload(decode=True).decode(part.get_content_charset())
 
@@ -98,6 +92,8 @@ class MailChecker(threading.Thread):
             typ, data = self.imap.login(self.username, self.password)
             self.imap.select('INBOX')
             typ, data = self.imap.SEARCH(None, 'ALL')
+            # If you want to debug, you could comment this line and mark
+            # your mail unread.
             self.old_mails = set(data[0].split())
         except:
             lg.error('Could\'t connect to IMAP server.')
@@ -108,10 +104,10 @@ class MailChecker(threading.Thread):
 
     def __init__(self, username, password,
             server='imap.gmail.com',
-            timeout=60,
+            timeout=600,
             raw_mail_handler=lambda *args : None):
         threading.Thread.__init__(self)
-        lg.info('MailChecker object initialized.')
+        lg.debug('MailChecker object initialized.')
         self.server = server
         self.timeout = timeout
         self.username = username
@@ -120,13 +116,13 @@ class MailChecker(threading.Thread):
         self.connect()
 
     def run(self):
-        lg.info('Running MailChecker.')
+        lg.debug('Running MailChecker.')
         while not self.kill_now:
             self.wait_for_new_mail()
-        lg.info('Stop running MailChecker.')
+        lg.debug('Stop running MailChecker.')
 
     def kill(self):
-        lg.info('Killing MailChecker.')
+        lg.debug('Killing MailChecker.')
         self.kill_now = True
         self.waitingEvent.set()
 
@@ -136,7 +132,7 @@ class MailChecker(threading.Thread):
                 return data[i][1]
 
     def wait_for_new_mail(self):
-        lg.info('Waiting for new mails....')
+        lg.debug('Waiting for new mails....')
         self.waitingEvent.clear()
         callback_normal = True
         def _idle_callback(args):
@@ -160,7 +156,7 @@ class MailChecker(threading.Thread):
             self.connect()
         lg.debug('Waiting ended.')
         if self.kill_now:
-            lg.info('The thread is killed. Stop waiting.')
+            lg.warning('The thread is killed. Stop waiting.')
             self.imap.CLOSE()
             self.imap.LOGOUT()
         elif self.callback_normal == True:
@@ -290,16 +286,13 @@ def run(username, password, imap_server='imap.gmail.com', callback=None):
     with open('logging.json', 'r') as log_json_file:
         logging.config.dictConfig(json.load(log_json_file))
 
-    t = 86400
     def handler(raw_email):
-        lg.debug('%r', raw_email)
         _to, _from, _sub, _msg = MailChecker.plain_text_from_raw_email(raw_email)
-        print("to (type={0!r}) {1!r}".format(type(_to), _to))
-        print("from (type = {0!r}) {1!r}".format(type(_from), _from))
-        print("subject (type = {0!r}) {1!r}".format(type(_sub), _sub))
         m = MailChecker.content_cleanup(_msg)
-        print("message:")
-        pp.pprint(m)
+        lg.debug("to (type={0!r}) {1!r}".format(type(_to), _to))
+        lg.debug("from (type = {0!r}) {1!r}".format(type(_from), _from))
+        lg.debug("subject (type = {0!r}) {1!r}".format(type(_sub), _sub))
+        lg.debug("message = {}".format(pp.pformat(m)))
         if _sub.startswith('Ingress Damage Report: '):
             agent, portals = parse(m)
             pp.pprint(agent)
@@ -307,7 +300,7 @@ def run(username, password, imap_server='imap.gmail.com', callback=None):
             if callback:
                 callback(agent, portals)
 
-    mail_checker = MailChecker(username, password, imap_server, t, handler)
+    mail_checker = MailChecker(username, password, imap_server, raw_mail_handler=handler)
     mail_checker.start()
     input()
     mail_checker.kill()
