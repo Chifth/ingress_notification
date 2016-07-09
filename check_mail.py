@@ -251,7 +251,7 @@ def parse(lines):
             line = lines.pop(0)
 
             # attacker
-            m = re.match('destroyed by (.*) at ', line)
+            m = re.match('.* destroyed by (.*) at ', line)
             if m:
                 portal['attacker'] = m.group(1)
 
