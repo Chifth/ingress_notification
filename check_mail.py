@@ -10,7 +10,7 @@ import logging, logging.config, json
 import pprint
 
 
-### Logger settings ###
+# Logger settings
 if __debug__:
     lg = logging.getLogger('debugger')
 else:
@@ -19,8 +19,7 @@ else:
 pp = pprint.PrettyPrinter(indent=2)
 
 
-
-### Main Class ###
+# MailChecker
 class MailChecker(threading.Thread):
     waitingEvent = threading.Event()
     imap = None
@@ -176,14 +175,10 @@ class MailChecker(threading.Thread):
                     self.raw_mail_handler(raw_email)
 
 
-
-### Demo ###
-
 def parse(lines):
     agent = {}
     portals = []
 
-    # Parse message.
     # Parse message.
     line = lines.pop(0)
     if line !=  '** Ingress - Begin Transmission**':
@@ -279,7 +274,6 @@ def parse(lines):
 
     return (agent, portals)
 
-#The following part demoes printing senders of new mails
 def run(username, password, imap_server='imap.gmail.com', callback=None):
 
     # Load logging config.
