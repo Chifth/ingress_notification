@@ -284,7 +284,7 @@ def parse(lines):
     return (agent, portals)
 
 #The following part demoes printing senders of new mails
-def main():
+def run(username, password, imap_server='imap.gmail.com', callback=None):
     def setup_logging(path='logging.json'):
         """
         setup logging configuration from a json file
@@ -297,9 +297,6 @@ def main():
 
     setup_logging(path='logging.json')
 
-    user = 'user@example.com'
-    pwd = 'yourpassword'
-    server = 'imap.gmail.com'
     t = 86400
     def handler(raw_email):
         lg.debug('%r', raw_email)
@@ -314,12 +311,11 @@ def main():
             agent, portals = parse(m)
             pp.pprint(agent)
             pp.pprint(portals)
+            if callback:
+                callback(agent, portals)
 
-    mail_checker = MailChecker(user, pwd, server, t, handler)
+    mail_checker = MailChecker(username, password, imap_server, t, handler)
     mail_checker.start()
     input()
     mail_checker.kill()
     sys.exit()
-
-if __name__ == '__main__':
-    main()
