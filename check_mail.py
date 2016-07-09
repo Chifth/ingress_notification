@@ -285,17 +285,10 @@ def parse(lines):
 
 #The following part demoes printing senders of new mails
 def run(username, password, imap_server='imap.gmail.com', callback=None):
-    def setup_logging(path='logging.json'):
-        """
-        setup logging configuration from a json file
-        """
-        if os.path.exists(path):
-            with open(path, 'r') as log_json_file:
-                logging.config.dictConfig(json.load(log_json_file))
-        else:
-            logging.basicConfig(level=level)
 
-    setup_logging(path='logging.json')
+    # Load logging config.
+    with open('logging.json', 'r') as log_json_file:
+        logging.config.dictConfig(json.load(log_json_file))
 
     t = 86400
     def handler(raw_email):
