@@ -1,0 +1,6 @@
+debug.log
+info.log
+.DS_Store
+.*.sw[a-z]
+__pycache__/
+env/
