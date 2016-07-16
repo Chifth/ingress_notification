@@ -25,4 +25,6 @@ if 'TELEGRAM_TOKEN' in os.environ:
 # Run mail checker
 check_mail.run(USERNAME, PASSWORD, callback=dosomething)
 
-input()
+# Do not end process
+while True:
+    sleep(60)
