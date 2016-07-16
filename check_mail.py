@@ -97,8 +97,6 @@ class MailChecker(threading.Thread):
             lg.error('Could\'t connect to IMAP server: %s.', str(e))
             sys.exit(1)
         lg.info('Found %d mails.', len(self.old_mails))
-        lg.debug('Exists mails:')
-        lg.debug(self.old_mails)
 
     def __init__(self, username, password,
             server='imap.gmail.com',
