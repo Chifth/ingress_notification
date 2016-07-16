@@ -1,6 +1,41 @@
 #!/usr/bin/env python3
 
+import os
 import re
+import sqlite3
+
+INGRESS_SQLITE_PATH = 'data/ingress.db'
+
+def mkdirp(path):
+    try:
+        os.makedirs(path, exist_ok=True)
+    except IOError as e:
+        if e.errno == errno.EACCES:
+            print('No permission to create folder "%s"' % path)
+        print(e)
+
+def create_database():
+    # Create if database not found
+    if not os.path.isfile(INGRESS_SQLITE_PATH):
+        mkdirp(os.path.dirname(INGRESS_SQLITE_PATH))
+        conn = sqlite3.connect(INGRESS_SQLITE_PATH)
+        c = conn.cursor()
+        c.execute('CREATE TABLE log (agent TEXT, portal TEXT, attacker TEXT, timestamp INTEGER, latitude REAL, longitude REAL)')
+        conn.commit()
+        conn.close()
+
+def insert_log(agent, portal, attacker, timestamp, latitude, longitude):
+    # Make sure database exists
+    create_database()
+
+    # Insert
+    sql = "INSERT INTO log VALUES ('%s', '%s', '%s', %d, %f, %f)" \
+        % (agent.replace("'", "''"), portal.replace("'", "''"), attacker.replace("'", "''"), timestamp, latitude, longitude)
+    conn = sqlite3.connect(INGRESS_SQLITE_PATH)
+    c = conn.cursor()
+    c.execute(sql)
+    conn.commit()
+    conn.close()
 
 def parse_email_lines(lines):
     agent = {}

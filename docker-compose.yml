@@ -8,3 +8,4 @@ ingress:
     - PYTHONIOENCODING=utf-8
   volumes:
     - ${PWD}/log:/root/ingress/log
+    - ${PWD}/data:/root/ingress/data

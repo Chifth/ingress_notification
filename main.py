@@ -13,6 +13,7 @@ def handle_email(sender, receiver, subject, message_lines):
         print(agent)
         for p in portals:
             print(p)
+            utils.insert_log(agent['name'], p['name'], p['attacker'], 0, 0, 0)
 
 
 def handle_telegram_message(message):
