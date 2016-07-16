@@ -4,3 +4,6 @@ info.log
 .*.sw[a-z]
 __pycache__/
 env/
+ingress.err
+ingress.out
+supervisord.log
