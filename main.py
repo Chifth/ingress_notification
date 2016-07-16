@@ -11,3 +11,4 @@ def dosomething(agent, portals):
     print(portals)
 
 check_mail.run(USERNAME, PASSWORD, callback=dosomething)
+input()

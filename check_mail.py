@@ -294,8 +294,6 @@ def run(username, password, imap_server='imap.gmail.com', callback=None):
             if callback:
                 callback(agent, portals)
 
+    # Start MailChecker
     mail_checker = MailChecker(username, password, imap_server, raw_mail_handler=handler)
     mail_checker.start()
-    input()
-    mail_checker.kill()
-    sys.exit()
