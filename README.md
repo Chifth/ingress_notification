@@ -13,6 +13,6 @@
 ## Run it manually
 
 - Install dependencies
-  - pip install -r requirements.txt
+  - `pip install -r requirements.txt`
 - Run
   - `./main.py`
