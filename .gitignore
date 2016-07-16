@@ -1,9 +1,15 @@
-debug.log
-info.log
-.DS_Store
-.*.sw[a-z]
+# Python releated
 __pycache__/
+*.pyc
 env/
+
+# Logs
 ingress.err
 ingress.out
 supervisord.log
+debug.log
+info.log
+
+# Others
+.DS_Store
+.*.sw[a-z]
