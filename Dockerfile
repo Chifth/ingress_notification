@@ -13,7 +13,7 @@ RUN pip install supervisor && pip3 install virtualenv
 # Get source
 RUN git clone https://github.com/hsiuhsiu/ingress_notification.git /root/ingress \
     && cd /root/ingress \
-    && virtualenv env
+    && virtualenv env \
     && env/bin/pip install -r requirements.txt
 
 WORKDIR /root/ingress
