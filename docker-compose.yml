@@ -1,4 +1,5 @@
 ingress:
+  container_name: ingress
   build: .
   environment:
     - USERNAME=<your_username>
