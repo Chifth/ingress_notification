@@ -17,4 +17,4 @@ RUN git clone https://github.com/hsiuhsiu/ingress_notification.git /root/ingress
     && env/bin/pip install -r requirements.txt
 
 WORKDIR /root/ingress
-CMD ["env/bin/python", "main.py"]
+CMD ["supervisord"]
