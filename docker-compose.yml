@@ -1,0 +1,5 @@
+ingress:
+  build: .
+  environment:
+    - USERNAME=<your_username>
+    - PASSWORD=<your_password>
