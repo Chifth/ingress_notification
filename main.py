@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import time
 import check_mail
 import telepot
 
@@ -27,4 +28,4 @@ check_mail.run(USERNAME, PASSWORD, callback=dosomething)
 
 # Do not end process
 while True:
-    sleep(60)
+    time.sleep(60)
