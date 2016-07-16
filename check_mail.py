@@ -94,8 +94,8 @@ class MailChecker(threading.Thread):
             # If you want to debug, you could comment this line and mark
             # your mail unread.
             self.old_mails = set(data[0].split())
-        except:
-            lg.error('Could\'t connect to IMAP server.')
+        except BaseException as e:
+            lg.error('Could\'t connect to IMAP server: %s.', str(e))
             sys.exit(1)
         lg.info('Found %d mails.', len(self.old_mails))
         lg.debug('Exists mails:')
