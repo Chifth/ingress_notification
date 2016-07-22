@@ -1,0 +1,147 @@
+Delivered-To: xxxxxxx@gmail.com
+Received: by 10.79.35.223 with SMTP id j92csp1017008ivj;
+        Fri, 22 Jul 2016 10:27:34 -0700 (PDT)
+X-Received: by 10.129.57.215 with SMTP id g206mr4318499ywa.37.1469208454949;
+        Fri, 22 Jul 2016 10:27:34 -0700 (PDT)
+Return-Path: <yyyyyyy+caf_=xxxxxxx=gmail.com@gmail.com>
+Received: from mail-yw0-x229.google.com (mail-yw0-x229.google.com. [2607:f8b0:4002:c05::229])
+        by mx.google.com with ESMTPS id e123si2502535ywf.253.2016.07.22.10.27.34
+        for <xxxxxxx@gmail.com>
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 22 Jul 2016 10:27:34 -0700 (PDT)
+Received-SPF: pass (google.com: domain of yyyyyyy+caf_=xxxxxxx=gmail.com@gmail.com designates 2607:f8b0:4002:c05::229 as permitted sender) client-ip=2607:f8b0:4002:c05::229;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@nianticlabs-com.20150623.gappssmtp.com;
+       spf=pass (google.com: domain of
+       yyyyyyy+caf_=xxxxxxx=gmail.com@gmail.com designates
+       2607:f8b0:4002:c05::229 as permitted sender)
+       smtp.mailfrom=yyyyyyy+caf_=xxxxxxx=gmail.com@gmail.com
+Received: by mail-yw0-x229.google.com with SMTP id r9so99295110ywg.0
+        for <xxxxxxx@gmail.com>; Fri, 22 Jul 2016 10:27:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20130820;
+        h=x-gm-message-state:delivered-to:dkim-signature:mime-version:date
+         :reply-to:message-id:subject:from:to;
+        bh=P8HYYOwQnJCqmFqep2nqQaNCOXlh+S6W/cBIZAmu/yc=;
+        b=Wq5xg98cik5c0T4Snkq2iyhnwRUprtI7ACcUzyYCQrfJC1wXGfquFFlyv1xdUhPGtf
+         wyC2EmrOQGHQf0zqWYcZ1yji6uatdH5lDr5n1RbaVwsG0Gu3tnB22KwXJhwmtkvEZqiZ
+         x7C7VJzZ/k3dW6joL9C6x72SrzTDPXeOoGQZGDTSFDK4x38AoqTjtiuPaOM23WTsVQ1K
+         /6FEznC9xTDNJq9dz2mXbPuvPn6TT0pzYVMeSQNgonzuxgVluvkqNkbl4s66papodYmH
+         IJB3sNVU8oexSvpG2i7imAH1z3skTWba32CWZQsDm4s3PI7pABrtV8lxtbag5vuUuoQ1
+         N2/g==
+X-Gm-Message-State: AEkoouvg5K9q+loKk+PU7fzlCuQ2fG3Q5tBKaE56uXGVM1anL7bTwliOSm8JFg2EPYQ00DvMJhDnXKWWVaTczO1w1dOJPgI=
+X-Received: by 10.129.35.8 with SMTP id j8mr4247943ywj.173.1469208454785;
+        Fri, 22 Jul 2016 10:27:34 -0700 (PDT)
+X-Forwarded-To: xxxxxxx@gmail.com
+X-Forwarded-For: xxxxxxx@gmail.com xxxxxxx@gmail.com
+Delivered-To: xxxxxxx@gmail.com
+Received: by 10.129.117.5 with SMTP id q5csp610865ywc;
+        Fri, 22 Jul 2016 10:27:34 -0700 (PDT)
+X-Received: by 10.107.198.147 with SMTP id w141mr5981925iof.146.1469208454121;
+        Fri, 22 Jul 2016 10:27:34 -0700 (PDT)
+Return-Path: <3hVeSVwkbAEAdgvcurkmgcrrkf.iqqingwugteqpvgpv.eqo@m3kw2wvrgufz5godrsrytgd7.apphosting.bounces.google.com>
+Received: from mail-it0-x248.google.com (mail-it0-x248.google.com. [2607:f8b0:4001:c0b::248])
+        by mx.google.com with ESMTPS id 192si8459211ith.30.2016.07.22.10.27.34
+        for <yyyyyyy@gmail.com>
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 22 Jul 2016 10:27:34 -0700 (PDT)
+Received-SPF: pass (google.com: domain of 3hvesvwkbaeadgvcurkmgcrrkf.iqqingwugteqpvgpv.eqo@m3kw2wvrgufz5godrsrytgd7.apphosting.bounces.google.com designates 2607:f8b0:4001:c0b::248 as permitted sender) client-ip=2607:f8b0:4001:c0b::248;
+Received: by mail-it0-x248.google.com with SMTP id u186so133420329ita.0
+        for <yyyyyyy@gmail.com>; Fri, 22 Jul 2016 10:27:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=nianticlabs-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:date:reply-to:message-id:subject:from:to;
+        bh=P8HYYOwQnJCqmFqep2nqQaNCOXlh+S6W/cBIZAmu/yc=;
+        b=2B0sMtBGJL9TqqR73OMT8mVFIkg8TXJMktv14x2LUq2XvDnyvX7HI1Tf+yzMO4hk3U
+         hrNcKbYnUXmmqJKbYVVo+eJ2s8nHbHY+gnhRebN30/K5HTT6XmkyOUL+RdRHRZnbVCQi
+         YwI2WS6KYSZotxwP+Uu3aRNkNlFD2upXWe+ih1gUehaxjPs1EP78oyRF8459t9U2Sxid
+         SxAO9H1hDnDb5co1VyzOEpGsIDmQ264dBJyw8qujkshVqQ96/w/KIZ8CzUdWqXmWkHyv
+         zWZBqDYmp+7AnukBQTr/ZKGfc8YgBob+Qw7qwbdNTdrGl0TGTvzncodKa8x8BLjOngMw
+         HzZg==
+MIME-Version: 1.0
+X-Received: by 10.157.7.225 with SMTP id 88mr4468031oto.13.1469208453741; Fri,
+ 22 Jul 2016 10:27:33 -0700 (PDT)
+Date: Fri, 22 Jul 2016 10:27:33 -0700
+Reply-To: Niantic Project Operations <ingress-support@nianticlabs.com>
+X-Google-Appengine-App-Id: s~betaspike
+X-Google-Appengine-App-Id-Alias: betaspike
+Message-ID: <94eb2c04f99efc888205383cbf59@google.com>
+Subject: Ingress Damage Report: Entities attacked by dindindon
+From: Niantic Project Operations <ingress-support@nianticlabs.com>
+To: yyyyyyy <yyyyyyy@gmail.com>
+Content-Type: multipart/alternative; boundary=94eb2c04f99efc885505383cbf56
+
+--94eb2c04f99efc885505383cbf56
+Content-Type: text/plain; charset=UTF-8; format=flowed; delsp=yes
+Content-Transfer-Encoding: base64
+
+KiogSW5ncmVzcyAtIEJlZ2luIFRyYW5zbWlzc2lvbioqDQoNCg0KDQpBZ2VudCBOYW1lOnd5Y2No
+ZW4NCkZhY3Rpb246RW5saWdodGVuZWQNCkN1cnJlbnQgTGV2ZWw6TDExDQoNCg0KREFNQUdFIFJF
+UE9SVA0KDQoNCg0K5LuA6bq86ay85p2x6KW/5L6G55qEDQoNCk5vLiAxLCBMYW5lIDEyOCwgU2Vj
+dGlvbiAyLCBZYW5qaXV5dWFuIFJvYWQsIE5hbmdhbmcgRGlzdHJpY3QsIFRhaXBlaSBDaXR5LCAg
+DQpUYWl3YW4gMTE1DQoNCg0KDQoNClBvcnRhbCAtIOS7gOm6vOmsvOadseilv+S+hueahA0KDQpN
+YXANCg0KDQpEQU1BR0U6DQoxIFJlc29uYXRvciBkZXN0cm95ZWQgYnkgZGluZGluZG9uIGF0IDE3
+OjI3IGhycyBHTVQNCjUgUmVzb25hdG9ycyByZW1haW5pbmcgb24gdGhpcyBQb3J0YWwuDQoNClNU
+QVRVUzoNCkxldmVsIDQNCkhlYWx0aDogNTIlDQpPd25lcjogcmhpbm9ncmVlbg0KDQoNCg0KDQoN
+CioqIEluZ3Jlc3MgLSBFbmQgVHJhbnNtaXNzaW9uICoqDQoNCg0K
+--94eb2c04f99efc885505383cbf56
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div style=3D"margin: 0; padding: 0; font-family: 'Coda', Helvetica, sans-s=
+erif; font-size: 13px; line-height: 1.4em; letter-spacing: 0.1em;"><table c=
+ellpadding=3D"0" cellspacing=3D"0" border=3D"0" width=3D"750px" style=3D"co=
+lor: #403F41; background-color: #f6f6f6; margin: 0; padding: 0; border-coll=
+apse: collapse;"><tbody><tr><td height=3D"165px" style=3D"padding-left: 25p=
+x;"><img src=3D"http://commondatastorage.googleapis.com/ingressemail/common=
+/transmission-begin.gif" alt=3D"** Ingress - Begin Transmission**" width=3D=
+"305" height=3D"165" style=3D"display: block; border: 0; height: auto; line=
+-height: 100%; outline: none; text-decoration: none;"></td></tr><tr><td><ta=
+ble cellpadding=3D"0" cellspacing=3D"0" border=3D"0" width=3D"700px" style=
+=3D"table-layout: fixed; margin: 0 25px; padding: 0; border-collapse: colla=
+pse;"><tbody><tr><td valign=3D"top" style=3D"font-size: 13px; padding-botto=
+m: 1.5em;"><span style=3D"font-weight: normal; margin-right: .3em; font-siz=
+e: 10px; text-transform: uppercase;">Agent Name:</span><span style=3D"color=
+: #428F43;">yyyyyyy</span><br /><span style=3D"font-weight: normal; margin-=
+right: .3em; font-size: 10px; text-transform: uppercase;">Faction:</span><s=
+pan style=3D"color: #428F43;">Enlightened</span><br /><span style=3D"font-w=
+eight: normal; margin-right: .3em; font-size: 10px; text-transform: upperca=
+se;">Current Level:</span><span>L11</span></td></tr><tr><td style=3D"font-s=
+ize: 17px; padding-bottom: .2em; border-bottom: 2px solid #403F41;"><div>DA=
+MAGE REPORT</div></td></tr><tr><td style=3D"padding-top: 1em; padding-botto=
+m: 1em;"><div>=E4=BB=80=E9=BA=BC=E9=AC=BC=E6=9D=B1=E8=A5=BF=E4=BE=86=E7=9A=
+=84</div><div><a target=3D"_blank" href=3D"https://www.ingress.com/intel?ll=
+=3D25.042299,121.614806&pll=3D25.042299,121.614806&z=3D19" style=3D"color: =
+#D73B8E; border: none; text-decoration: none;">No. 1, Lane 128, Section 2, =
+Yanjiuyuan Road, Nangang District, Taipei City, Taiwan 115</a></div></td></=
+tr><tr><td style=3D"overflow: hidden;"><table cellpadding=3D"0" cellspacing=
+=3D"0" border=3D"0"><div style=3D"width:1000px;"><div style=3D"width: auto;=
+ height: 160px; float: left; display: inline-block;"><img src=3D"http://lh4=
+.ggpht.com/DQr_gI0jO2_suQs38_U9f4xr8Z-8_ygSSsFYHOG3gCco4uv5zAdJ_sO4OZMCh5ys=
+LyY9Ju9ouXcXwMrQASL2" alt=3D"Portal - =E4=BB=80=E9=BA=BC=E9=AC=BC=E6=9D=B1=
+=E8=A5=BF=E4=BE=86=E7=9A=84" height=3D"160" style=3D"display: block;border:=
+ 0;height: auto;line-height: 100%;outline: none;text-decoration: none;"></d=
+iv><div style=3D"width: auto; height: 160px; float: left; display: inline-b=
+lock; overflow:hidden;"><img src=3D"http://maps.googleapis.com/maps/api/sta=
+ticmap?center=3D25.042299,121.614906&zoom=3D19&size=3D700x160&style=3Dvisib=
+ility:on%7Csaturation:-50%7Cinvert_lightness:true%7Chue:0x131c1c&style=3Dfe=
+ature:water%7Cvisibility:on%7Chue:0x005eff%7Cinvert_lightness:true&style=3D=
+feature:poi%7Cvisibility:off&style=3Dfeature:transit%7Cvisibility:off&marke=
+rs=3Dicon:http://commondatastorage.googleapis.com/ingress.com/img/map_icons=
+/marker_images/enl_5res.png%7Cshadow:false%7C25.042299,121.614806&client=3D=
+gme-nianticinc&signature=3DS0F5qyazVsSyhbvTawKUchWCOys=3D" alt=3D"Map" widt=
+h=3D"700" height=3D"160" style=3D"display: block;border: 0;height: auto;lin=
+e-height: 100%;outline: none;text-decoration: none;"></div><div style=3D"cl=
+ear:both;"></div></table></td></tr><tr><td style=3D"padding: 1em 0;"><table=
+ cellpadding=3D"0" cellspacing=3D"0" border=3D"0" width=3D"700px"><td width=
+=3D"400px"><div>DAMAGE:<br>1 Resonator destroyed by <span style=3D"color: #=
+3679B9;">dindindon</span> at 17:27 hrs GMT<br>5 Resonators remaining on thi=
+s Portal.</div></td><td><div>STATUS:<br>Level 4<br>Health: 52%<br>Owner: <s=
+pan style=3D"color: #428F43;">rhinogreen</span></div></td></table></td></tr=
+></tbody></table></td></tr><tr><td height=3D"34px" style=3D"padding-top: 1e=
+m; padding-left: 25px;"><img src=3D"http://commondatastorage.googleapis.com=
+/ingressemail/common/transmission-end.gif" alt=3D"** Ingress - End Transmis=
+sion **" width=3D"293" height=3D"34" style=3D"display: block; border: 0; he=
+ight: auto; line-height: 100%; outline: none; text-decoration: none;"></td>=
+</tr></tbody></table></div>
+--94eb2c04f99efc885505383cbf56--

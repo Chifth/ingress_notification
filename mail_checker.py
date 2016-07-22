@@ -5,21 +5,13 @@ import threading
 from imaplib2 import imaplib2
 import email
 from email.header import decode_header
-import logging, logging.config, json
+import logging
 import pprint
 
+PP = pprint.PrettyPrinter(indent=2)
 
-# Logger settings
-if __debug__:
-    lg = logging.getLogger('debugger')
-else:
-    lg = logging.getLogger()
-
-pp = pprint.PrettyPrinter(indent=2)
-
-
-# MailChecker
 class MailChecker(threading.Thread):
+    lg = None
     waitingEvent = threading.Event()
     imap = None
     username = None
@@ -67,10 +59,13 @@ class MailChecker(threading.Thread):
 
         # Extract contents. (only text/plain type).
         for part in mail.walk():
+            #lg.debug(part)
             if part.get_content_type() == 'text/plain':
                 _msg = part.get_payload(decode=True).decode(part.get_content_charset())
+            elif part.get_content_type() == 'text/html':
+                _html = part.get_payload(decode=True).decode(part.get_content_charset())
 
-        return (_to, _from, _subject, _msg)
+        return (_to, _from, _subject, _msg, _html)
 
     @staticmethod
     def content_cleanup(msg):
@@ -84,7 +79,7 @@ class MailChecker(threading.Thread):
         return new_msg
 
     def connect(self):
-        lg.info('Connecting to the mail server...')
+        self.lg.info('Connecting to the mail server...')
         self.imap = imaplib2.IMAP4_SSL(self.server)
         try:
             typ, data = self.imap.login(self.username, self.password)
@@ -92,18 +87,19 @@ class MailChecker(threading.Thread):
             typ, data = self.imap.SEARCH(None, 'ALL')
             # If you want to debug, you could comment this line and mark
             # your mail unread.
-            self.old_mails = set(data[0].split())
+            #self.old_mails = set(data[0].split())
         except BaseException as e:
-            lg.error('Could\'t connect to IMAP server: %s.', str(e))
+            self.lg.error('Could\'t connect to IMAP server: %s.', str(e))
             sys.exit(1)
-        lg.info('Found %d mails.', len(self.old_mails))
+        self.lg.info('Found %d mails.', len(self.old_mails))
 
     def __init__(self, username, password,
             server='imap.gmail.com',
             timeout=600,
             raw_mail_handler=lambda *args : None):
+        self.lg = logging.getLogger(__name__)
+        self.lg.debug('Iniializing MailChecker object.')
         threading.Thread.__init__(self)
-        lg.debug('MailChecker object initialized.')
         self.server = server
         self.timeout = timeout
         self.username = username
@@ -112,13 +108,13 @@ class MailChecker(threading.Thread):
         self.connect()
 
     def run(self):
-        lg.debug('Running MailChecker.')
+        self.lg.debug('Running MailChecker.')
         while not self.kill_now:
             self.wait_for_new_mail()
-        lg.debug('Stop running MailChecker.')
+        self.lg.debug('Stop running MailChecker.')
 
     def kill(self):
-        lg.debug('Killing MailChecker.')
+        self.lg.debug('Killing MailChecker.')
         self.kill_now = True
         self.waitingEvent.set()
 
@@ -128,63 +124,60 @@ class MailChecker(threading.Thread):
                 return data[i][1]
 
     def wait_for_new_mail(self):
-        lg.debug('Waiting for new mails....')
+        self.lg.debug('Waiting for new mails....')
         self.waitingEvent.clear()
         callback_normal = True
         def _idle_callback(args):
-            lg.debug("imap.idle callback with args {!r}".format(args))
+            self.lg.debug("imap.idle callback with args {!r}".format(args))
             try:
                 if args[0][1][0] == ('IDLE terminated (Success)'):
-                    lg.debug('Got a new mail or timeout')
+                    self.lg.debug('Got a new mail or timeout')
                     self.callback_normal = True
                 else:
                     lg.warning('imap.idle callback abnormally')
                     self.callback_normal = False
             except TypeError:
-                lg.warning('imap.idle callback abnormally')
+                self.lg.warning('imap.idle callback abnormally')
                 self.callback_normal = False
             self.waitingEvent.set()
         try:
             self.imap.idle(timeout=self.timeout, callback=_idle_callback)
             self.waitingEvent.wait()
         except Exception as e:
-            lg.error('Idle error. Prepare for reconnecting')
+            self.lg.error('Idle error. Prepare for reconnecting')
             self.connect()
-        lg.debug('Waiting ended.')
+        self.lg.debug('Waiting ended.')
         if self.kill_now:
-            lg.warning('The thread is killed. Stop waiting.')
+            self.lg.warning('The thread is killed. Stop waiting.')
             self.imap.CLOSE()
             self.imap.LOGOUT()
         elif self.callback_normal == True:
             typ, data = self.imap.SEARCH(None, 'UNSEEN')
-            lg.debug('Data: %r', data)
+            self.lg.debug('Data: %r', data)
             new_mails = 0
             new_mails = set(data[0].split()) - self.old_mails
             if len(new_mails) == 0:
-                lg.debug('No new mail.')
+                self.lg.debug('No new mail.')
             else:
-                lg.info('Got new mail(s)!')
+                self.lg.info('Got new mail(s)!')
                 for _id in new_mails:
-                    lg.debug('Mail ID: %r', _id)
+                    self.lg.debug('Mail ID: %r', _id)
                     typ, d = self.imap.fetch(_id, '(RFC822)')
-                    lg.debug("d = {!r}".format(d))
+                    self.lg.debug("{0!r}  {1!r}".format(type(d), d))
                     raw_email = self._get_raw_email_from_fetched_data(d)
+                    self.lg.debug("{0!r}  {1!r}".format(type(raw_email), d))
                     self.raw_mail_handler(raw_email)
 
 
 def run(username, password, imap_server='imap.gmail.com', callback=None):
 
-    # Load logging config.
-    with open('logging.json', 'r') as log_json_file:
-        logging.config.dictConfig(json.load(log_json_file))
-
     def handler(raw_email):
         _to, _from, _sub, _msg = MailChecker.plain_text_from_raw_email(raw_email)
         m = MailChecker.content_cleanup(_msg)
-        lg.debug("to (type={0!r}) {1!r}".format(type(_to), _to))
-        lg.debug("from (type = {0!r}) {1!r}".format(type(_from), _from))
-        lg.debug("subject (type = {0!r}) {1!r}".format(type(_sub), _sub))
-        lg.debug("message = {}".format(pp.pformat(m)))
+        self.lg.debug("to (type={0!r}) {1!r}".format(type(_to), _to))
+        self.lg.debug("from (type = {0!r}) {1!r}".format(type(_from), _from))
+        self.lg.debug("subject (type = {0!r}) {1!r}".format(type(_sub), _sub))
+        self.lg.debug("message = {}".format(PP.pformat(_msg)))
         if callback:
             callback(_from, _to, _sub, m)
 

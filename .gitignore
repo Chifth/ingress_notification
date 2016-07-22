@@ -7,8 +7,8 @@ env/
 ingress.err
 ingress.out
 supervisord.log
-debug.log
-info.log
+debug.log*
+info.log*
 
 # Others
 .DS_Store
