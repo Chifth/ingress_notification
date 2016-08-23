@@ -8,6 +8,8 @@ import logging
 import time
 import pickle
 
+TEST_DATE_PATH = 'test_data/'
+
 class MailCheckerTestCase(unittest.TestCase):
     def setUp(self):
         logging.basicConfig(level=logging.DEBUG)
@@ -22,7 +24,7 @@ class MailCheckerTestCase(unittest.TestCase):
         self.assertFalse(False)
 
     def test_plain_text_from_raw_eamil(self):
-        with open('raw_email_sample.txt', 'r') as f:
+        with open(TEST_DATA_PATH+'raw_email_sample.txt', 'r') as f:
             raw_email = f.read()
             MailChecker.plain_text_from_raw_email(raw_email)
             _to, _from, _sub, _msg, _html = MailChecker.plain_text_from_raw_email(raw_email)
@@ -36,7 +38,7 @@ class MailCheckerTestCase(unittest.TestCase):
             
 
     def test_content_cleanup(self):
-        with open('message_list_sample.pkl', 'rb') as f:
+        with open(TEST_DATA_PATH+'message_list_sample.pkl', 'rb') as f:
             msg_list = pickle.load(f)
             msg_list = MailChecker.content_cleanup(msg_list)
             self.assertEquals(msg_list[0], '** Ingress - Begin Transmission**')
