@@ -32,8 +32,9 @@ def insert_log(agent, portal, attacker, timestamp, latitude, longitude):
     create_database()
 
     # Insert
+    conn = sqlite3.connect(INGRESS_SQLITE_PATH)
     cur = conn.cursor()
-    cursor.execute("INSERT INTO log VALUES (?, ?, ?, ?, ?, ?)",
+    cur.execute("INSERT INTO log VALUES (?, ?, ?, ?, ?, ?)",
             (agent, portal, attacker, timestamp, latitude, longitude))
     conn = sqlite3.connect(INGRESS_SQLITE_PATH)
     conn.commit()
@@ -44,19 +45,35 @@ def insert_notification(agent, portal, address, nick, receivers):
     create_database()
 
     # Insert
-    cur = conn.cursor()
-    cursor.execute("INSERT INTO notification VALUES (?, ?, ?, ?, ?)",
-            (agent, portal, address, nick, json.dumps(receivers)))
     conn = sqlite3.connect(INGRESS_SQLITE_PATH)
+    cur = conn.cursor()
+    cur.execute("INSERT INTO notification VALUES (?, ?, ?, ?, ?)",
+            (agent, portal, address, nick, json.dumps(receivers)))
     conn.commit()
     conn.close()
+
+def get_notifications():
+    # Make sure database exists
+    create_database()
+
+    # Insert
+    conn = sqlite3.connect(INGRESS_SQLITE_PATH)
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM notification")
+    portals = cur.fetchall()
+    s = portals[0][4]
+    portals = [(p[0], p[1], p[2], p[3], json.loads(p[4])) for p in portals]
+    conn.commit()
     conn.close()
+    return portals
+
 
 def parse_email_lines(lines):
     agent = {}
     portals = []
 
     # Parse message.
+    conn = sqlite3.connect(INGRESS_SQLITE_PATH)
     line = lines.pop(0)
     if line !=  '** Ingress - Begin Transmission**':
         return (agent, portals)
