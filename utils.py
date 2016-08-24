@@ -3,6 +3,8 @@
 import os
 import re
 import sqlite3
+import json
+
 
 INGRESS_SQLITE_PATH = 'data/ingress.db'
 
@@ -21,6 +23,7 @@ def create_database():
         conn = sqlite3.connect(INGRESS_SQLITE_PATH)
         c = conn.cursor()
         c.execute('CREATE TABLE log (agent TEXT, portal TEXT, attacker TEXT, timestamp INTEGER, latitude REAL, longitude REAL)')
+        c.execute('CREATE TABLE notification (agent TEXT, portal TEXT, address TEXT, nick TEXT, receivers TEXT)')
         conn.commit()
         conn.close()
 
@@ -29,12 +32,24 @@ def insert_log(agent, portal, attacker, timestamp, latitude, longitude):
     create_database()
 
     # Insert
-    sql = "INSERT INTO log VALUES ('%s', '%s', '%s', %d, %f, %f)" \
-        % (agent.replace("'", "''"), portal.replace("'", "''"), attacker.replace("'", "''"), timestamp, latitude, longitude)
+    cur = conn.cursor()
+    cursor.execute("INSERT INTO log VALUES (?, ?, ?, ?, ?, ?)",
+            (agent, portal, attacker, timestamp, latitude, longitude))
     conn = sqlite3.connect(INGRESS_SQLITE_PATH)
-    c = conn.cursor()
-    c.execute(sql)
     conn.commit()
+    conn.close()
+
+def insert_notification(agent, portal, address, nick, receivers):
+    # Make sure database exists
+    create_database()
+
+    # Insert
+    cur = conn.cursor()
+    cursor.execute("INSERT INTO notification VALUES (?, ?, ?, ?, ?)",
+            (agent, portal, address, nick, json.dumps(receivers)))
+    conn = sqlite3.connect(INGRESS_SQLITE_PATH)
+    conn.commit()
+    conn.close()
     conn.close()
 
 def parse_email_lines(lines):
